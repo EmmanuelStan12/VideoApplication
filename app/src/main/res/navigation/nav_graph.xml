@@ -6,20 +6,9 @@
     app:startDestination="@id/videoListFragment">
 
     <fragment
-        android:id="@+id/videoPage"
-        android:name="com.codedev.videoapp.ui.video_page.VideoPage"
-        android:label="VideoPage" >
-        <argument
-            android:name="video_id"
-            app:argType="integer" />
-    </fragment>
-    <fragment
         android:id="@+id/videoListFragment"
         android:name="com.codedev.videoapp.ui.video_list.VideoListFragment"
         android:label="VideoListFragment" >
-        <action
-            android:id="@+id/action_videoListFragment_to_videoPage"
-            app:destination="@id/videoPage" />
         <action
             android:id="@+id/action_videoListFragment_to_videoActivity"
             app:destination="@id/videoActivity" />

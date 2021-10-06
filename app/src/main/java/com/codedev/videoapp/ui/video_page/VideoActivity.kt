@@ -60,7 +60,10 @@ class VideoActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
-        viewModel.execute(VideoPageEvents.GetVideoEvent(args.videoId))
+        if(viewModel.videoState.value.videoId == null) {
+            viewModel.execute(VideoPageEvents.GetVideoEvent(args.videoId))
+        }
+        Log.d("TAG", "onCreate: ${viewModel.videoState.value.toString()}")
 
         lifecycleScope.launchWhenStarted {
             viewModel.videoPageState.collect {
@@ -68,8 +71,6 @@ class VideoActivity : AppCompatActivity() {
                     binding.progressBar.visibility = View.VISIBLE
                 }
                 if (it.video != null && !it.isLoading) {
-                    binding.progressBar.visibility = View.GONE
-                    Log.d("TAG", "onViewCreated: ${it.video.toString()}")
                     playVideo(it.video)
                 }
                 if (it.error != "" && !it.isLoading) {
@@ -80,11 +81,25 @@ class VideoActivity : AppCompatActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        if (orientation == UiOrientation.LANDSCAPE) {
+            (this as Activity).requestedOrientation =
+                ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
+            orientation = UiOrientation.PORTRAIT
+        } else {
+            super.onBackPressed()
+        }
+    }
+
     private fun releasePlayer() {
         player?.run {
             viewModel.execute(
                 VideoPageEvents.SaveVideoState(
-                    VideoState(this.playWhenReady, this.currentWindowIndex, this.currentPosition)
+                    viewModel.videoState.value.copy(
+                        playWhenReady = this.playWhenReady,
+                        currentWindow = this.currentWindowIndex,
+                        playbackPosition = this.currentPosition
+                    )
                 )
             )
             listener?.let { removeListener(it) }
@@ -103,14 +118,15 @@ class VideoActivity : AppCompatActivity() {
         binding.urlTv?.text = video.url
         titleTextView?.text = video.user.name
         val state = viewModel.videoState.value
+        Log.d("VideoActivity", "playVideo: ${state.toString()}")
         player?.let { exoPlayer ->
             exoPlayer.playWhenReady = state.playWhenReady
+            exoPlayer.setMediaItem(mediaItem)
             exoPlayer.seekTo(
                 state.currentWindow,
                 state.playbackPosition
             )
             exoPlayer.prepare()
-            exoPlayer.setMediaItem(mediaItem)
         }
     }
 
@@ -131,7 +147,6 @@ class VideoActivity : AppCompatActivity() {
         titleTextView = binding.playerView.findViewById(R.id.header_tv)
 
         fullScreenButton?.setOnClickListener {
-            Log.d("PlayerActivity", "initializePlayer: fullScreenButton clicked")
             if (orientation == UiOrientation.PORTRAIT) {
                 (this as Activity).requestedOrientation =
                     ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
@@ -149,21 +164,21 @@ class VideoActivity : AppCompatActivity() {
 
         player?.addListener(
             idle = {
-                Log.d("TAG", "initializePlayer: Idle")
+                binding.progressBar.visibility = View.VISIBLE
             },
             ready = {
-                Log.d("TAG", "initializePlayer: ready")
+                binding.progressBar.visibility = View.GONE
             },
             buffering = {
-                Log.d("TAG", "initializePlayer: buffering")
+                binding.progressBar.visibility = View.VISIBLE
             },
             ended = {
-                Log.d("TAG", "initializePlayer: ended")
             },
             onListen = {
                 listener = it
             }
         )
+
     }
 
     private fun hideSystemUi() {

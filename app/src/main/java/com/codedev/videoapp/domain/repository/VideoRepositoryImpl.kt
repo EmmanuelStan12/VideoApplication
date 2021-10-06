@@ -17,18 +17,15 @@ class VideoRepositoryImpl @Inject constructor(
         emit(Resource.Loading())
         try {
             val response = videoApi.getPopularVideos()
-            Log.d("TAG", "getPopularVideos: $response")
             if(response.isSuccessful) {
                 response.body()?.let {
-                    Log.d("TAG", "getVideos: ${it.videos.toString()}")
                     delay(3000L)
                     emit(Resource.Success<SearchVideoResponse>(it))
                 }
             } else {
-                Log.d("TAG", "getPopularVideos: ${response.toString()}")
+                Log.d("TAG", "getVideos: ${response.toString()}")
             }
         }catch (e: Exception) {
-            Log.d("TAG", "getSources: ${e.toString()}")
             emit(Resource.Error<SearchVideoResponse>(message = e.message.toString()))
         }
     }
@@ -37,10 +34,8 @@ class VideoRepositoryImpl @Inject constructor(
         emit(Resource.Loading<VideoResponse>())
         try {
             val response = videoApi.getVideoById(id.toString())
-            Log.d("TAG", "getVideoById: $response")
             if(response.isSuccessful) {
                 response.body()?.let {
-                    Log.d("TAG", "getVideos: ${it.toString()}")
                     delay(3000L)
                     emit(Resource.Success<VideoResponse>(it))
                 }

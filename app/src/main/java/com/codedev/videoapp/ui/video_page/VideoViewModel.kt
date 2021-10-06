@@ -1,6 +1,7 @@
 package com.codedev.videoapp.ui.video_page
 
 import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.codedev.videoapp.domain.util.Resource
@@ -18,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class VideoViewModel @Inject constructor(
-    private val useCase: VideoUseCase
+    private val useCase: VideoUseCase,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private var _videoPageState = MutableStateFlow<VideoPageState>(VideoPageState())
@@ -34,6 +36,9 @@ class VideoViewModel @Inject constructor(
         viewModelScope.launch {
             when(event) {
                 is VideoPageEvents.GetVideoEvent -> {
+                    _videoState.value = videoState.value.copy(
+                        videoId = event.videoId
+                    )
                     useCase.getVideo(event.videoId).collectLatest {
                         when(it) {
                             is Resource.Loading -> {
@@ -58,6 +63,9 @@ class VideoViewModel @Inject constructor(
                     }
                 }
                 is VideoPageEvents.SaveVideoState -> {
+                    /*savedStateHandle["playWhenReady"] = event.videoState.playWhenReady
+                    savedStateHandle["currentWindow"] = event.videoState.currentWindow
+                    savedStateHandle["playbackPosition"] = event.videoState.playbackPosition*/
                     _videoState.value = videoState.value.copy(
                         playWhenReady = event.videoState.playWhenReady,
                         currentWindow = event.videoState.currentWindow,

@@ -30,7 +30,6 @@
             android:layout_centerVertical="true"
             android:ellipsize="end"
             android:maxLines="2"
-            android:text="Funny Anim Videos"
             android:textColor="@color/textWhite"
             android:textSize="17sp" />
 
@@ -99,6 +98,7 @@
         style="@style/ExoMediaButton.Play"
         android:layout_width="56dp"
         android:layout_height="56dp"
+        app:tint="@color/textWhite"
         android:src="@drawable/ic_play"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -176,13 +176,15 @@
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/full_screen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:layout_gravity="center_vertical"
             android:gravity="end"
             android:layout_marginStart="5dp"
             app:tint="@color/textWhite"
             android:src="@drawable/ic_fullscreen"
+            android:padding="5dp"
+            android:background="@drawable/background_dark_circle"
             app:layout_constraintBottom_toBottomOf="@id/exo_progress"
             app:layout_constraintStart_toEndOf="@+id/exo_duration"
             app:layout_constraintTop_toTopOf="@+id/exo_progress"
