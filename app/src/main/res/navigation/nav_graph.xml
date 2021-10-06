@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/videoListFragment">
+
+    <fragment
+        android:id="@+id/videoPage"
+        android:name="com.codedev.videoapp.ui.video_page.VideoPage"
+        android:label="VideoPage" >
+        <argument
+            android:name="video_id"
+            app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/videoListFragment"
+        android:name="com.codedev.videoapp.ui.video_list.VideoListFragment"
+        android:label="VideoListFragment" >
+        <action
+            android:id="@+id/action_videoListFragment_to_videoPage"
+            app:destination="@id/videoPage" />
+        <action
+            android:id="@+id/action_videoListFragment_to_videoActivity"
+            app:destination="@id/videoActivity" />
+    </fragment>
+    <activity
+        android:id="@+id/videoActivity"
+        android:name="com.codedev.videoapp.ui.video_page.VideoActivity"
+        android:label="activity_video"
+        tools:layout="@layout/activity_video" >
+        <argument
+            android:name="videoId"
+            app:argType="integer" />
+    </activity>
+</navigation>
