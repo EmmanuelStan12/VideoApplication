@@ -24,6 +24,9 @@ class VideoViewModel @Inject constructor(
     private var _videoPageState = MutableStateFlow<VideoPageState>(VideoPageState())
     val videoPageState : StateFlow<VideoPageState> get() = _videoPageState
 
+    private val _videoState = MutableStateFlow(VideoState())
+    val videoState: StateFlow<VideoState> get() = _videoState
+
     private var _uiEvent: Channel<UiEvent> = Channel()
     val uiEvent = _uiEvent.receiveAsFlow()
 
@@ -53,6 +56,13 @@ class VideoViewModel @Inject constructor(
                             }
                         }
                     }
+                }
+                is VideoPageEvents.SaveVideoState -> {
+                    _videoState.value = videoState.value.copy(
+                        playWhenReady = event.videoState.playWhenReady,
+                        currentWindow = event.videoState.currentWindow,
+                        playbackPosition = event.videoState.playbackPosition
+                    )
                 }
             }
         }

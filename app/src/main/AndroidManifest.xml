@@ -15,7 +15,8 @@
         android:theme="@style/Theme.VideoApp">
         <activity
             android:name=".ui.video_page.VideoActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:theme="@style/Theme.VideoApp.NoActionBar"/>
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"

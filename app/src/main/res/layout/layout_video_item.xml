@@ -13,25 +13,30 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_300sdp">
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_toolbar"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_marginHorizontal="10dp"
+        android:padding="10dp"
+        android:layout_marginBottom="10dp">
 
-        <ImageView
-            android:id="@+id/video_image"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_300sdp"
-            android:contentDescription="@string/app_name"
-            android:scaleType="centerCrop"
-            app:image="@{video}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            android:id="@+id/overlay"
-            android:layout_width="match_parent"
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/background_video_gradient"
+            android:id="@+id/video_image"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="0dp">
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="200dp"
+                android:contentDescription="@string/app_name"
+                android:scaleType="centerCrop"
+                app:image="@{video}"
+                tools:src="@drawable/ic_launcher_background" />
+        </androidx.cardview.widget.CardView>
 
         <FrameLayout
             android:id="@+id/video_time_layout"
@@ -46,9 +51,9 @@
                 android:id="@+id/video_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="00:00:00"
+                android:text="4secs"
                 android:textColor="@color/textWhite"
-                android:textSize="@dimen/_15ssp"
+                android:textSize="17sp"
                 android:textStyle="italic" />
 
         </FrameLayout>
@@ -58,37 +63,35 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_10sdp"
-            app:layout_constraintEnd_toStartOf="@id/video_time_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:maxLines="2"
+            android:ellipsize="end"
             android:layout_marginEnd="@dimen/_10sdp"
             android:text="@{video.user.name}"
             android:textColor="@color/textWhite"
-            android:textSize="@dimen/_25ssp"
+            android:textSize="25sp"
             android:textStyle="bold"
             android:textAlignment="textStart"
-            app:layout_constraintBottom_toTopOf="@id/video_user_name"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/video_image" />
 
         <TextView
             android:id="@+id/video_user_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toStartOf="@id/video_time_layout"
+            app:layout_constraintTop_toBottomOf="@id/video_title"
             android:layout_marginEnd="@dimen/_10sdp"
             android:textAlignment="textStart"
             android:layout_marginStart="@dimen/_10sdp"
             android:layout_marginBottom="@dimen/_10sdp"
             android:text="@{video.user.url}"
             android:textColor="@color/textWhite"
-            android:textSize="@dimen/_15ssp"
+            android:textSize="17sp"
+            android:maxLines="2"
+            android:ellipsize="end"
             android:textStyle="italic"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="@color/textWhite"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/video_image" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

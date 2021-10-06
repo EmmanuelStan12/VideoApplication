@@ -26,7 +26,7 @@ interface VideoApi {
         @Query("per_page") perPage: Int = 15
     ): Response<SearchVideoResponse>
 
-    @GET("videos/:id")
+    @GET("videos/{id}")
     suspend fun getVideoById(
         @Path("id") id: String
     ): Response<VideoResponse>

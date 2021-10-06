@@ -1,5 +1,6 @@
 package com.codedev.videoapp.ui.video_page
 
+import android.content.res.Resources
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -7,8 +8,11 @@ import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
 import androidx.navigation.navArgs
 import com.codedev.videoapp.R
 import com.codedev.videoapp.data.models.video_response.VideoResponse
@@ -20,6 +24,16 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.util.Util
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import android.content.pm.ActivityInfo
+
+import android.app.Activity
+import android.os.PersistableBundle
+import com.google.android.material.snackbar.Snackbar
+
+enum class UiOrientation {
+    LANDSCAPE, PORTRAIT
+}
+
 
 @AndroidEntryPoint
 class VideoActivity : AppCompatActivity() {
@@ -30,13 +44,13 @@ class VideoActivity : AppCompatActivity() {
     private val viewModel: VideoViewModel by viewModels()
 
     private var player: SimpleExoPlayer? = null
-    private var playWhenReady = true
-    private var currentWindow = 0
-    private var playbackPosition = 0L
     private var listener: Player.Listener? = null
 
     private var cancelButton: AppCompatImageView? = null
     private var fullScreenButton: AppCompatImageView? = null
+    private var titleTextView: AppCompatTextView? = null
+
+    private var orientation: UiOrientation = UiOrientation.PORTRAIT
 
     private val args: VideoActivityArgs by navArgs()
 
@@ -51,11 +65,16 @@ class VideoActivity : AppCompatActivity() {
         lifecycleScope.launchWhenStarted {
             viewModel.videoPageState.collect {
                 if (it.isLoading) {
-
+                    binding.progressBar.visibility = View.VISIBLE
                 }
                 if (it.video != null && !it.isLoading) {
+                    binding.progressBar.visibility = View.GONE
                     Log.d("TAG", "onViewCreated: ${it.video.toString()}")
-                    //playVideo(it.video)
+                    playVideo(it.video)
+                }
+                if (it.error != "" && !it.isLoading) {
+                    binding.progressBar.visibility = View.GONE
+                    Snackbar.make(binding.root, it.error, Snackbar.LENGTH_SHORT).show()
                 }
             }
         }
@@ -63,13 +82,36 @@ class VideoActivity : AppCompatActivity() {
 
     private fun releasePlayer() {
         player?.run {
-            playbackPosition = this.currentPosition
-            currentWindow = this.currentWindowIndex
-            playWhenReady = this.playWhenReady
+            viewModel.execute(
+                VideoPageEvents.SaveVideoState(
+                    VideoState(this.playWhenReady, this.currentWindowIndex, this.currentPosition)
+                )
+            )
             listener?.let { removeListener(it) }
             release()
         }
         player = null
+    }
+
+    private fun playVideo(video: VideoResponse) {
+        val media = video.video_files[0].link
+        val uri = Uri.parse(media)
+        val mediaItem = MediaItem.fromUri(uri)
+        binding.nameTv?.text = video.user.name
+        binding.profileTv?.text = video.user.url
+        binding.titleTv?.text = video.user.name
+        binding.urlTv?.text = video.url
+        titleTextView?.text = video.user.name
+        val state = viewModel.videoState.value
+        player?.let { exoPlayer ->
+            exoPlayer.playWhenReady = state.playWhenReady
+            exoPlayer.seekTo(
+                state.currentWindow,
+                state.playbackPosition
+            )
+            exoPlayer.prepare()
+            exoPlayer.setMediaItem(mediaItem)
+        }
     }
 
     private fun initializePlayer() {
@@ -77,28 +119,32 @@ class VideoActivity : AppCompatActivity() {
         val trackSelector = DefaultTrackSelector(this).apply {
             setParameters(buildUponParameters().setMaxVideoSizeSd())
         }
-        val media = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-        val uri = Uri.parse(media)
-        val mediaItem = MediaItem.fromUri(uri)
         player = SimpleExoPlayer.Builder(this)
             .setTrackSelector(trackSelector)
             .build()
             .also { exoPlayer ->
                 binding.playerView.player = exoPlayer
-                exoPlayer.playWhenReady = playWhenReady
-                exoPlayer.seekTo(currentWindow, playbackPosition)
-                exoPlayer.prepare()
-                exoPlayer.setMediaItem(mediaItem)
             }
 
-        cancelButton = binding.playerView.findViewById<AppCompatImageView>(R.id.cross_im)
-        fullScreenButton = binding.playerView.findViewById<AppCompatImageView>(R.id.full_screen)
+        cancelButton = binding.playerView.findViewById(R.id.cross_im)
+        fullScreenButton = binding.playerView.findViewById(R.id.full_screen)
+        titleTextView = binding.playerView.findViewById(R.id.header_tv)
 
         fullScreenButton?.setOnClickListener {
             Log.d("PlayerActivity", "initializePlayer: fullScreenButton clicked")
+            if (orientation == UiOrientation.PORTRAIT) {
+                (this as Activity).requestedOrientation =
+                    ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+                hideSystemUi()
+                orientation = UiOrientation.LANDSCAPE
+            } else {
+                (this as Activity).requestedOrientation =
+                    ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
+                orientation = UiOrientation.PORTRAIT
+            }
         }
         cancelButton?.setOnClickListener {
-            Log.d("PlayerActivity", "initializePlayer: cancel Clicked")
+            finish()
         }
 
         player?.addListener(
@@ -138,7 +184,7 @@ class VideoActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        hideSystemUi()
+        //hideSystemUi()
         if ((Util.SDK_INT < 24 || player == null)) {
             initializePlayer()
         }

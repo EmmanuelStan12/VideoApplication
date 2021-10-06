@@ -47,7 +47,8 @@ class VideoAdapter: RecyclerView.Adapter<VideoAdapter.VideoViewHolder>() {
 
         fun bind(video: Video) {
             binding.video = video
-            binding.videoTime.text = video.duration.toString()
+            val time = StringBuilder().append(video.duration).append("secs")
+            binding.videoTime.text = time.toString()
         }
     }
 }

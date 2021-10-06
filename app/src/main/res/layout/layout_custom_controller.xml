@@ -56,6 +56,11 @@
         app:constraint_referenced_ids="exo_pause,exo_play" />
 
     <ImageButton
+        android:contentDescription="@string/app_name"
+        android:background="@drawable/background_dark_circle"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        app:tint="@color/textWhite"
         android:id="@+id/exo_rew"
         style="@style/ExoMediaButton.Rewind"
         android:layout_marginRight="40dp"
@@ -66,9 +71,14 @@
         app:layout_constraintTop_toTopOf="@id/exo_play" />
 
     <ImageButton
+        android:contentDescription="@string/app_name"
+        android:background="@drawable/background_dark_circle"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        app:tint="@color/textWhite"
         android:id="@+id/exo_ffwd"
         style="@style/ExoMediaButton.FastForward"
-        android:layout_marginLeft="40dp"
+        android:layout_marginStart="40dp"
         android:src="@drawable/ic_forward"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@id/exo_play"
@@ -83,6 +93,8 @@
         app:constraint_referenced_ids="exo_pause,exo_play" />
 
     <ImageButton
+        android:contentDescription="@string/app_name"
+        android:background="@drawable/background_dark_circle"
         android:id="@+id/exo_play"
         style="@style/ExoMediaButton.Play"
         android:layout_width="56dp"
@@ -94,7 +106,10 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
+        android:contentDescription="@string/app_name"
+        android:background="@drawable/background_dark_circle"
         android:id="@+id/exo_pause"
+        app:tint="@color/textWhite"
         style="@style/ExoMediaButton.Pause"
         android:layout_width="56dp"
         android:layout_height="56dp"
