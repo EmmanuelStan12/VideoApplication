@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:text="4secs"
                 android:textColor="@color/textWhite"
-                android:textSize="17sp"
+                android:textSize="13sp"
                 android:textStyle="italic" />
 
         </FrameLayout>

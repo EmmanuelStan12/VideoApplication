@@ -63,13 +63,15 @@ class VideoViewModel @Inject constructor(
                     }
                 }
                 is VideoPageEvents.SaveVideoState -> {
-                    /*savedStateHandle["playWhenReady"] = event.videoState.playWhenReady
-                    savedStateHandle["currentWindow"] = event.videoState.currentWindow
-                    savedStateHandle["playbackPosition"] = event.videoState.playbackPosition*/
                     _videoState.value = videoState.value.copy(
                         playWhenReady = event.videoState.playWhenReady,
                         currentWindow = event.videoState.currentWindow,
                         playbackPosition = event.videoState.playbackPosition
+                    )
+                }
+                is VideoPageEvents.UpdateOrientation -> {
+                    _videoState.value = videoState.value.copy(
+                        orientation = event.orientation
                     )
                 }
             }

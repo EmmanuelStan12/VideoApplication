@@ -1,5 +1,6 @@
 package com.codedev.videoapp.ui.video_page
 
+import android.annotation.SuppressLint
 import android.content.res.Resources
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
@@ -30,10 +31,6 @@ import android.app.Activity
 import android.os.PersistableBundle
 import com.google.android.material.snackbar.Snackbar
 
-enum class UiOrientation {
-    LANDSCAPE, PORTRAIT
-}
-
 
 @AndroidEntryPoint
 class VideoActivity : AppCompatActivity() {
@@ -49,8 +46,6 @@ class VideoActivity : AppCompatActivity() {
     private var cancelButton: AppCompatImageView? = null
     private var fullScreenButton: AppCompatImageView? = null
     private var titleTextView: AppCompatTextView? = null
-
-    private var orientation: UiOrientation = UiOrientation.PORTRAIT
 
     private val args: VideoActivityArgs by navArgs()
 
@@ -81,11 +76,12 @@ class VideoActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onBackPressed() {
+        val orientation = viewModel.videoState.value.orientation
         if (orientation == UiOrientation.LANDSCAPE) {
-            (this as Activity).requestedOrientation =
-                ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
-            orientation = UiOrientation.PORTRAIT
+            this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+            viewModel.execute(VideoPageEvents.UpdateOrientation(UiOrientation.PORTRAIT))
         } else {
             super.onBackPressed()
         }
@@ -130,6 +126,7 @@ class VideoActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SourceLockedOrientationActivity")
     private fun initializePlayer() {
 
         val trackSelector = DefaultTrackSelector(this).apply {
@@ -147,15 +144,13 @@ class VideoActivity : AppCompatActivity() {
         titleTextView = binding.playerView.findViewById(R.id.header_tv)
 
         fullScreenButton?.setOnClickListener {
+            val orientation = viewModel.videoState.value.orientation
             if (orientation == UiOrientation.PORTRAIT) {
-                (this as Activity).requestedOrientation =
-                    ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-                hideSystemUi()
-                orientation = UiOrientation.LANDSCAPE
+                this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+                viewModel.execute(VideoPageEvents.UpdateOrientation(UiOrientation.LANDSCAPE))
             } else {
-                (this as Activity).requestedOrientation =
-                    ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
-                orientation = UiOrientation.PORTRAIT
+                this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                viewModel.execute(VideoPageEvents.UpdateOrientation(UiOrientation.PORTRAIT))
             }
         }
         cancelButton?.setOnClickListener {
@@ -199,7 +194,9 @@ class VideoActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        //hideSystemUi()
+        if(viewModel.videoState.value.orientation == UiOrientation.LANDSCAPE) {
+            hideSystemUi()
+        }
         if ((Util.SDK_INT < 24 || player == null)) {
             initializePlayer()
         }
