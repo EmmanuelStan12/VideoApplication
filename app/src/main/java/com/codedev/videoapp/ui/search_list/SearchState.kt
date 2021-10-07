@@ -1,6 +1,7 @@
 package com.codedev.videoapp.ui.search_list
 
 import com.codedev.videoapp.data.models.search_video_response.Video
+import com.codedev.videoapp.data.room.AutoCompleteItem
 
 data class SearchState(
     val query: String = "",

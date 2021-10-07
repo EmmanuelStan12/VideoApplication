@@ -3,8 +3,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.codedev.videoapp.data.room.AutoCompleteItem
 import com.codedev.videoapp.databinding.LayoutAutoCompleteBinding
-import com.codedev.videoapp.ui.search_list.AutoCompleteItem
 
 class AutoCompleteAdapter : RecyclerView.Adapter<AutoCompleteAdapter.AutoCompleteViewHolder>(){
 

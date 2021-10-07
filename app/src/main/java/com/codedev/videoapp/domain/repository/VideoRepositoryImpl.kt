@@ -4,6 +4,8 @@ import android.util.Log
 import com.codedev.videoapp.data.api.VideoApi
 import com.codedev.videoapp.data.models.search_video_response.SearchVideoResponse
 import com.codedev.videoapp.data.models.video_response.VideoResponse
+import com.codedev.videoapp.data.room.AutoCompleteItem
+import com.codedev.videoapp.data.room.QueryDao
 import com.codedev.videoapp.domain.util.Resource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -11,7 +13,8 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class VideoRepositoryImpl @Inject constructor(
-    private val videoApi: VideoApi
+    private val videoApi: VideoApi,
+    private val queryDao: QueryDao
 ) : VideoRepository {
     override suspend fun getPopularVideos(page: Int): Flow<Resource<SearchVideoResponse>> = flow {
         emit(Resource.Loading())
@@ -56,6 +59,26 @@ class VideoRepositoryImpl @Inject constructor(
         size: String
     ): Flow<Resource<SearchVideoResponse>> = flow {
 
+    }
+
+    override fun getQueries(): Flow<List<AutoCompleteItem>> {
+        return queryDao.getAllQueries()
+    }
+
+    override suspend fun getQuery(id: Int): AutoCompleteItem {
+        return queryDao.getQuery(id)
+    }
+
+    override suspend fun deleteQuery(item: AutoCompleteItem) {
+        queryDao.deleteQuery(item)
+    }
+
+    override suspend fun searchQuery(query: String): Flow<List<AutoCompleteItem>> {
+        return queryDao.searchQuery(query)
+    }
+
+    override suspend fun insert(item: AutoCompleteItem) {
+        queryDao.insert(item)
     }
 
 }

@@ -1,11 +1,12 @@
 package com.codedev.videoapp.di
 
+import android.app.Application
+import androidx.room.Room
 import com.codedev.videoapp.data.api.VideoApi
+import com.codedev.videoapp.data.room.QueryDatabase
 import com.codedev.videoapp.domain.repository.VideoRepository
 import com.codedev.videoapp.domain.repository.VideoRepositoryImpl
-import com.codedev.videoapp.domain.use_cases.GetVideo
-import com.codedev.videoapp.domain.use_cases.GetVideos
-import com.codedev.videoapp.domain.use_cases.SearchVideo
+import com.codedev.videoapp.domain.use_cases.*
 import com.codedev.videoapp.domain.util.VideoUseCase
 import com.codedev.videoapp.ui.util.Constants.API_KEY
 import com.codedev.videoapp.ui.util.Constants.BASE_URL
@@ -23,6 +24,16 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+    @Provides
+    @Singleton
+    fun provideQueryDatabase(application: Application): QueryDatabase {
+        return Room.databaseBuilder(
+            application,
+            QueryDatabase::class.java,
+            "query_db"
+        ).build()
+    }
 
     @Provides
     @Singleton
@@ -45,8 +56,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRepository(videoApi: VideoApi): VideoRepository {
-        return VideoRepositoryImpl(videoApi)
+    fun provideRepository(videoApi: VideoApi, db: QueryDatabase): VideoRepository {
+        return VideoRepositoryImpl(videoApi, db.queryDao)
     }
 
     @Provides
@@ -55,7 +66,11 @@ object AppModule {
         return VideoUseCase(
             searchVideo = SearchVideo(videoRepository),
             getVideo = GetVideo(videoRepository),
-            getVideos = GetVideos(videoRepository)
+            getVideos = GetVideos(videoRepository),
+            searchQuery = SearchQuery(videoRepository),
+            getQueries = GetQueries(videoRepository),
+            deleteQuery = DeleteQuery(videoRepository),
+            insertQuery = InsertQuery(videoRepository),
         )
     }
 }

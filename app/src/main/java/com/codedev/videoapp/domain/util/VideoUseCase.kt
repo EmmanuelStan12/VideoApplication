@@ -1,11 +1,13 @@
 package com.codedev.videoapp.domain.util
 
-import com.codedev.videoapp.domain.use_cases.GetVideo
-import com.codedev.videoapp.domain.use_cases.GetVideos
-import com.codedev.videoapp.domain.use_cases.SearchVideo
+import com.codedev.videoapp.domain.use_cases.*
 
 data class VideoUseCase(
     val searchVideo: SearchVideo,
     val getVideo: GetVideo,
-    val getVideos: GetVideos
+    val getVideos: GetVideos,
+    val getQueries: GetQueries,
+    val insertQuery: InsertQuery,
+    val deleteQuery: DeleteQuery,
+    val searchQuery: SearchQuery
 )

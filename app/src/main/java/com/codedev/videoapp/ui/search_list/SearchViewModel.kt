@@ -3,6 +3,7 @@ package com.codedev.videoapp.ui.search_list
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.codedev.videoapp.data.room.AutoCompleteItem
 import com.codedev.videoapp.domain.util.Resource
 import com.codedev.videoapp.domain.util.VideoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,28 +26,32 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             when(event) {
                 is SearchEvents.Submit -> {
+                    _searchState.value = searchState.value.copy(
+                        query = event.query
+                    )
+                    useCase.insertQuery(AutoCompleteItem(text = searchState.value.query))
                     useCase.searchVideo(searchState.value.query, searchState.value.page).collectLatest {
                         when(it) {
                             is Resource.Loading -> {
                                 _searchState.value = searchState.value.copy(
                                     loading = true,
-                                    showQueries = true,
-                                    showVideos = false
+                                    showQueries = false,
+                                    showVideos = true
                                 )
                             }
                             is Resource.Error -> {
                                 _searchState.value = searchState.value.copy(
                                     loading = false,
-                                    showQueries = true,
-                                    showVideos = false,
+                                    showQueries = false,
+                                    showVideos = true,
                                     error = it.message ?: "Unknown Error Occurred"
                                 )
                             }
                             is Resource.Success -> {
                                 _searchState.value = searchState.value.copy(
                                     loading = false,
-                                    showQueries = true,
-                                    showVideos = false,
+                                    showQueries = false,
+                                    showVideos = true,
                                     data = it.data?.videos ?: emptyList()
                                 )
                             }
@@ -54,7 +59,30 @@ class SearchViewModel @Inject constructor(
                     }
                 }
                 is SearchEvents.TextChangeListener -> {
-
+                    useCase.searchQuery(event.query).collectLatest {
+                        _searchState.value = searchState.value.copy(
+                            queries = it,
+                            loading = false,
+                            showQueries = true,
+                            showVideos = false,
+                        )
+                    }
+                }
+                is SearchEvents.GetAllQueries -> {
+                    useCase.getQueries().collectLatest {
+                        _searchState.value = searchState.value.copy(
+                            queries = it,
+                            loading = false,
+                            showQueries = true,
+                            showVideos = false,
+                        )
+                    }
+                }
+                is SearchEvents.DeleteQuery -> {
+                    useCase.deleteQuery(event.item)
+                }
+                is SearchEvents.InsertQuery -> {
+                    useCase.insertQuery(AutoCompleteItem(text = event.query))
                 }
             }
         }
