@@ -16,7 +16,7 @@
         app:hide_on_touch="true"
         app:show_timeout="5000"
         app:auto_show="true"
-        app:surface_type="texture_view"
+        app:surface_type="surface_view"
         app:use_controller="true"
         android:background="@android:color/background_dark"
         app:controller_layout_id="@layout/layout_custom_controller"/>

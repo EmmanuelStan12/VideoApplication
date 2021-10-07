@@ -5,4 +5,6 @@ import com.codedev.videoapp.data.models.search_video_response.Video
 sealed class VideoListEvents {
     data class VideoItemClick(val video: Video) : VideoListEvents()
     object GetVideoList: VideoListEvents()
+    object GetMoreVideos: VideoListEvents()
+    data class UpdateCurrentPosition(val position: Int): VideoListEvents()
 }

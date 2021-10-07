@@ -28,7 +28,14 @@ import kotlinx.coroutines.flow.collect
 import android.content.pm.ActivityInfo
 
 import android.app.Activity
+import android.content.res.Configuration
+import android.os.Build
 import android.os.PersistableBundle
+import android.view.ViewGroup
+import android.view.WindowManager
+import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.snackbar.Snackbar
 
 
@@ -47,6 +54,8 @@ class VideoActivity : AppCompatActivity() {
     private var fullScreenButton: AppCompatImageView? = null
     private var titleTextView: AppCompatTextView? = null
 
+    private var height: Int? = null
+
     private val args: VideoActivityArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +67,6 @@ class VideoActivity : AppCompatActivity() {
         if(viewModel.videoState.value.videoId == null) {
             viewModel.execute(VideoPageEvents.GetVideoEvent(args.videoId))
         }
-        Log.d("TAG", "onCreate: ${viewModel.videoState.value.toString()}")
 
         lifecycleScope.launchWhenStarted {
             viewModel.videoPageState.collect {
@@ -66,6 +74,13 @@ class VideoActivity : AppCompatActivity() {
                     binding.progressBar.visibility = View.VISIBLE
                 }
                 if (it.video != null && !it.isLoading) {
+                    binding.videoImage?.visibility = View.VISIBLE
+                    Glide.with(this@VideoActivity)
+                        .load(it.video.video_pictures[0].picture)
+                        .centerCrop()
+                        .transition(DrawableTransitionOptions.withCrossFade())
+                        .error(R.drawable.ic_error)
+                        .into(binding.videoImage!!)
                     playVideo(it.video)
                 }
                 if (it.error != "" && !it.isLoading) {
@@ -114,7 +129,6 @@ class VideoActivity : AppCompatActivity() {
         binding.urlTv?.text = video.url
         titleTextView?.text = video.user.name
         val state = viewModel.videoState.value
-        Log.d("VideoActivity", "playVideo: ${state.toString()}")
         player?.let { exoPlayer ->
             exoPlayer.playWhenReady = state.playWhenReady
             exoPlayer.setMediaItem(mediaItem)
@@ -128,6 +142,7 @@ class VideoActivity : AppCompatActivity() {
 
     @SuppressLint("SourceLockedOrientationActivity")
     private fun initializePlayer() {
+        binding.videoImage?.visibility = View.VISIBLE
 
         val trackSelector = DefaultTrackSelector(this).apply {
             setParameters(buildUponParameters().setMaxVideoSizeSd())
@@ -138,6 +153,7 @@ class VideoActivity : AppCompatActivity() {
             .also { exoPlayer ->
                 binding.playerView.player = exoPlayer
             }
+        val pageState = viewModel.videoPageState.value
 
         cancelButton = binding.playerView.findViewById(R.id.cross_im)
         fullScreenButton = binding.playerView.findViewById(R.id.full_screen)
@@ -162,21 +178,52 @@ class VideoActivity : AppCompatActivity() {
                 binding.progressBar.visibility = View.VISIBLE
             },
             ready = {
+                binding.videoImage?.visibility = View.GONE
                 binding.progressBar.visibility = View.GONE
             },
             buffering = {
                 binding.progressBar.visibility = View.VISIBLE
             },
             ended = {
+
             },
             onListen = {
                 listener = it
             }
         )
 
+        if(pageState.video != null) {
+            playVideo(pageState.video)
+        }
+
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            hideSystemUi()
+            viewModel.execute(VideoPageEvents.UpdateOrientation(UiOrientation.LANDSCAPE))
+            height = binding.playerView.layoutParams.height
+            val layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            binding.playerView.layoutParams = layoutParams
+            binding.descriptionLayout?.visibility = View.GONE
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            viewModel.execute(VideoPageEvents.UpdateOrientation(UiOrientation.PORTRAIT))
+            val layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height!!)
+            binding.playerView.layoutParams = layoutParams
+            binding.descriptionLayout?.visibility = View.VISIBLE
+            showSystemUi()
+        }
     }
 
     private fun hideSystemUi() {
+        if (Util.SDK_INT < 16) {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        }
+
         binding.playerView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
                 or View.SYSTEM_UI_FLAG_FULLSCREEN
                 or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -185,11 +232,22 @@ class VideoActivity : AppCompatActivity() {
                 or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION)
     }
 
+    private fun showSystemUi() {
+        if (Util.SDK_INT < 16) {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN.inv(),
+                WindowManager.LayoutParams.FLAG_FULLSCREEN.inv())
+        }
+
+        binding.playerView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
+    }
+
     override fun onStart() {
         super.onStart()
         if (Util.SDK_INT >= 24) {
             initializePlayer()
         }
+        Log.d("TAG", "onStart: ")
     }
 
     override fun onResume() {
@@ -199,7 +257,9 @@ class VideoActivity : AppCompatActivity() {
         }
         if ((Util.SDK_INT < 24 || player == null)) {
             initializePlayer()
+            Log.d("TAG", "onStart: ")
         }
+        Log.d("TAG", "onStart: ")
     }
 
     override fun onPause() {
@@ -207,6 +267,7 @@ class VideoActivity : AppCompatActivity() {
         if (Util.SDK_INT < 24) {
             releasePlayer()
         }
+        Log.d("TAG", "onStart: ")
     }
 
 
@@ -215,5 +276,6 @@ class VideoActivity : AppCompatActivity() {
         if (Util.SDK_INT >= 24) {
             releasePlayer()
         }
+        Log.d("TAG", "onStart: ")
     }
 }

@@ -13,19 +13,19 @@ import javax.inject.Inject
 class VideoRepositoryImpl @Inject constructor(
     private val videoApi: VideoApi
 ) : VideoRepository {
-    override suspend fun getPopularVideos(): Flow<Resource<SearchVideoResponse>> = flow {
+    override suspend fun getPopularVideos(page: Int): Flow<Resource<SearchVideoResponse>> = flow {
         emit(Resource.Loading())
         try {
-            val response = videoApi.getPopularVideos()
-            if(response.isSuccessful) {
+            val response = videoApi.getPopularVideos(page = page)
+            if (response.isSuccessful) {
                 response.body()?.let {
-                    delay(3000L)
+                    delay(2000L)
                     emit(Resource.Success<SearchVideoResponse>(it))
                 }
             } else {
                 Log.d("TAG", "getVideos: ${response.toString()}")
             }
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             emit(Resource.Error<SearchVideoResponse>(message = e.message.toString()))
         }
     }
@@ -34,7 +34,7 @@ class VideoRepositoryImpl @Inject constructor(
         emit(Resource.Loading<VideoResponse>())
         try {
             val response = videoApi.getVideoById(id.toString())
-            if(response.isSuccessful) {
+            if (response.isSuccessful) {
                 response.body()?.let {
                     delay(3000L)
                     emit(Resource.Success<VideoResponse>(it))
@@ -42,7 +42,7 @@ class VideoRepositoryImpl @Inject constructor(
             } else {
                 Log.d("TAG", "getVideos: ${response.toString()}")
             }
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             Log.d("TAG", "getVideos: ${e.toString()}")
             emit(Resource.Error<VideoResponse>(message = e.message.toString()))
         }

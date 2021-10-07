@@ -15,10 +15,20 @@
         app:hide_on_touch="true"
         app:show_timeout="5000"
         app:auto_show="true"
-        app:surface_type="texture_view"
+        app:surface_type="surface_view"
         app:use_controller="true"
         android:background="@android:color/background_dark"
         app:controller_layout_id="@layout/layout_custom_controller"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_launcher_background"
+        android:scaleType="centerCrop"
+        android:id="@+id/video_image"
+        android:contentDescription="@string/app_name" />
+
 
     <ProgressBar
         android:layout_width="50dp"

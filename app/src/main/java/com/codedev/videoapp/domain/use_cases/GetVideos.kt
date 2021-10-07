@@ -7,5 +7,5 @@ class GetVideos @Inject constructor(
     private val repository: VideoRepository
 ) {
 
-    suspend operator fun invoke() = repository.getPopularVideos()
+    suspend operator fun invoke(page: Int) = repository.getPopularVideos(page)
 }

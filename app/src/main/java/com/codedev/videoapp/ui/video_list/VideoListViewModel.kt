@@ -7,9 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.codedev.videoapp.data.models.search_video_response.Video
 import com.codedev.videoapp.domain.util.Resource
 import com.codedev.videoapp.domain.util.VideoUseCase
+import com.codedev.videoapp.ui.common.checkInternetConnection
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -37,28 +37,57 @@ class VideoListViewModel @Inject constructor(
                     _uiEvent.send(UiEvent.NavigateScreen(event.video))
                 }
                 is VideoListEvents.GetVideoList -> {
-                    videoUseCase.getVideos().collectLatest {
-                        when(it) {
-                            is Resource.Loading -> {
-                                _videoListState.value = videoListState.value.copy(
-                                    isLoading = true
-                                )
-                            }
-                            is Resource.Error -> {
-                                _videoListState.value = videoListState.value.copy(
-                                    isLoading = false,
-                                    error = it.message ?: "Unknown Error Occurred"
-                                )
-                                Log.d("TAG", "execute: Error Occurred ${event.toString()}")
-                            }
-                            is Resource.Success -> {
-                                _videoListState.value = videoListState.value.copy(
-                                    isLoading = false,
-                                    data = it.data?.videos ?: emptyList()
-                                )
-                            }
+                    checkInternetConnection(
+                        getApplication(),
+                        error = {
+                            _videoListState.value = videoListState.value.copy(
+                                error = it
+                            )
                         }
+                    ) {
+                        getVideos()
                     }
+                }
+                is VideoListEvents.GetMoreVideos -> {
+                    checkInternetConnection(getApplication(), error = { _videoListState.value = videoListState.value.copy(error = it) }) {
+                        getVideos()
+                    }
+                }
+                is VideoListEvents.UpdateCurrentPosition -> {
+                    _videoListState.value = videoListState.value.copy(
+                        currentPosition = event.position
+                    )
+                }
+            }
+        }
+    }
+
+    private suspend fun getVideos() {
+        val state = videoListState.value
+        videoUseCase.getVideos(videoListState.value.page).collectLatest {
+            when(it) {
+                is Resource.Loading -> {
+                    _videoListState.value = videoListState.value.copy(
+                        isLoading = state.page <= 1,
+                        loadingMore = state.page > 1
+                    )
+                }
+                is Resource.Error -> {
+                    _videoListState.value = videoListState.value.copy(
+                        isLoading = false,
+                        loadingMore = false,
+                        error = it.message ?: "Unknown Error Occurred"
+                    )
+                }
+                is Resource.Success -> {
+                    val list = state.data.map { item -> item }.toList()
+                    list.toMutableList().addAll(it.data?.videos ?: emptyList())
+                    _videoListState.value = state.copy(
+                        isLoading = false,
+                        data = list.toList(),
+                        page = state.page + 1,
+                        loadingMore = false
+                    )
                 }
             }
         }

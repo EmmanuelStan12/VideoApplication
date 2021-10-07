@@ -16,7 +16,8 @@
         <activity
             android:name=".ui.video_page.VideoActivity"
             android:exported="true"
-            android:theme="@style/Theme.VideoApp.NoActionBar"/>
+            android:theme="@style/Theme.VideoApp.NoActionBar"
+            android:configChanges="orientation|screenSize"/>
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"

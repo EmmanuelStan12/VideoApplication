@@ -10,7 +10,7 @@ class SearchVideo @Inject constructor(
     suspend operator fun invoke(
         query: String,
         page: Int,
-        perPage: Int
+        perPage: Int = 15
     ) = repository.searchVideo(
         query, page, perPage
     )

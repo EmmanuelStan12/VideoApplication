@@ -7,6 +7,9 @@
         <entry key="..\:/Users/User/Documents/Projects/AndroidStudioProjects/VideoApp/app/src/main/res/drawable/background_image_button.xml" value="0.640625" />
         <entry key="..\:/Users/User/Documents/Projects/AndroidStudioProjects/VideoApp/app/src/main/res/drawable/background_toolbar.xml" value="0.25277777777777777" />
         <entry key="..\:/Users/User/Documents/Projects/AndroidStudioProjects/VideoApp/app/src/main/res/drawable/background_video_gradient.xml" value="0.18981481481481483" />
+        <entry key="..\:/Users/User/Documents/Projects/AndroidStudioProjects/VideoApp/app/src/main/res/drawable/bg_autocomplete.xml" value="0.1638888888888889" />
+        <entry key="..\:/Users/User/Documents/Projects/AndroidStudioProjects/VideoApp/app/src/main/res/drawable/ic_back.xml" value="0.25277777777777777" />
+        <entry key="..\:/Users/User/Documents/Projects/AndroidStudioProjects/VideoApp/app/src/main/res/drawable/ic_delete.xml" value="0.1638888888888889" />
         <entry key="..\:/Users/User/Documents/Projects/AndroidStudioProjects/VideoApp/app/src/main/res/drawable/ic_search.xml" value="0.2203125" />
         <entry key="..\:/Users/User/Documents/Projects/AndroidStudioProjects/VideoApp/app/src/main/res/layout-land/activity_video.xml" value="0.1625" />
         <entry key="..\:/Users/User/Documents/Projects/AndroidStudioProjects/VideoApp/app/src/main/res/layout/activity_main.xml" value="0.13703703703703704" />
@@ -15,7 +18,10 @@
         <entry key="..\:/Users/User/Documents/Projects/AndroidStudioProjects/VideoApp/app/src/main/res/layout/fragment_search.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/User/Documents/Projects/AndroidStudioProjects/VideoApp/app/src/main/res/layout/fragment_video_list.xml" value="0.25" />
         <entry key="..\:/Users/User/Documents/Projects/AndroidStudioProjects/VideoApp/app/src/main/res/layout/fragment_video_page.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/User/Documents/Projects/AndroidStudioProjects/VideoApp/app/src/main/res/layout/layout_auto_complete.xml" value="0.25" />
+        <entry key="..\:/Users/User/Documents/Projects/AndroidStudioProjects/VideoApp/app/src/main/res/layout/layout_completion_view.xml" value="0.2898148148148148" />
         <entry key="..\:/Users/User/Documents/Projects/AndroidStudioProjects/VideoApp/app/src/main/res/layout/layout_custom_controller.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/User/Documents/Projects/AndroidStudioProjects/VideoApp/app/src/main/res/layout/layout_loading.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/User/Documents/Projects/AndroidStudioProjects/VideoApp/app/src/main/res/layout/layout_video_item.xml" value="0.25" />
       </map>
     </option>

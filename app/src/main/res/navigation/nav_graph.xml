@@ -12,6 +12,14 @@
         <action
             android:id="@+id/action_videoListFragment_to_videoActivity"
             app:destination="@id/videoActivity" />
+        <action
+            android:id="@+id/action_videoListFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
+        <argument
+            android:name="query"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
     </fragment>
     <activity
         android:id="@+id/videoActivity"
@@ -22,4 +30,12 @@
             android:name="videoId"
             app:argType="integer" />
     </activity>
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.codedev.videoapp.ui.search_list.SearchFragment"
+        android:label="SearchFragment" >
+        <action
+            android:id="@+id/action_searchFragment_to_videoListFragment"
+            app:destination="@id/videoListFragment" />
+    </fragment>
 </navigation>
